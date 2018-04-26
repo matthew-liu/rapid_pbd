@@ -26,6 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
   shape_msgs
   std_msgs
   surface_perception
+  custom_landmark_2d
   tf
   transform_graph
   urdf
@@ -141,6 +142,7 @@ catkin_package(
     rapid_pbd_runtime_robot_state
     rapid_pbd_step_executor
     rapid_pbd_surface_segmentation_action
+    rapid_pbd_find_landmark_2d_action
     rapid_pbd_visualizer
     rapid_pbd_world
   CATKIN_DEPENDS
@@ -295,6 +297,14 @@ target_link_libraries(rapid_pbd_surface_segmentation_action
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES})
 
+add_library(rapid_pbd_find_landmark_2d_action src/find_landmark_2d_action.cpp)
+add_dependencies(rapid_pbd_find_landmark_2d_action ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rapid_pbd_find_landmark_2d_action
+  rapid_pbd_program_db
+  rapid_pbd_robot_config
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES})
+
 add_library(rapid_pbd_visualizer src/visualizer.cpp)
 add_dependencies(rapid_pbd_visualizer ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rapid_pbd_visualizer
@@ -406,7 +416,7 @@ install(DIRECTORY frontend/build/es6-bundled/
 )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS 
+install(TARGETS
   # Libraries
   rapid_pbd_action_clients
   rapid_pbd_action_executor

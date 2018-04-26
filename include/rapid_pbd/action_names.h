@@ -28,6 +28,8 @@ static const char kMoveGroupActionName[] = "move_group";
 
 static const char kSurfaceSegmentationActionName[] = "segment_surfaces_action";
 
+static const char kFindLandmark2DActionName[] = "find_landmark_2d_action";
+
 namespace pr2 {
 static const char kLeftGripperActionName[] =
     "/l_gripper_controller/gripper_action";

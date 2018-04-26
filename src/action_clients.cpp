@@ -10,6 +10,7 @@ ActionClients::ActionClients()
       r_gripper_client(kRightGripperActionName, true),
       head_client(kHeadActionName, true),
       surface_segmentation_client(kSurfaceSegmentationActionName, true),
+      find_landmark_2d_client(kFindLandmark2DActionName, true),
       moveit_client(kMoveGroupActionName, true) {}
 }  // namespace pbd
 }  // namespace rapid
