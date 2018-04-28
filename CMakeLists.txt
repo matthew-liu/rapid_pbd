@@ -383,6 +383,17 @@ target_link_libraries(rapid_pbd_surface_segmentation_node
   ${catkin_LIBRARIES}
 )
 
+add_executable(rapid_pbd_find_landmark_2d_node src/find_landmark_2d_node.cpp)
+set_target_properties(rapid_pbd_find_landmark_2d_node PROPERTIES OUTPUT_NAME find_landmark_2d_node PREFIX "")
+add_dependencies(rapid_pbd_find_landmark_2d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rapid_pbd_find_landmark_2d_node
+  rapid_pbd_program_db
+  rapid_pbd_robot_config
+  rapid_pbd_find_landmark_2d_action
+  ${catkin_LIBRARIES}
+)
+
+
 add_executable(rapid_pbd_pr2_gripper_demo src/pr2_gripper_demo.cpp)
 set_target_properties(rapid_pbd_pr2_gripper_demo PROPERTIES OUTPUT_NAME pr2_gripper_demo PREFIX "")
 add_dependencies(rapid_pbd_pr2_gripper_demo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -444,6 +455,7 @@ install(TARGETS
   rapid_pbd_program_execution_node
   rapid_pbd_pr2_action_node
   rapid_pbd_surface_segmentation_node
+  rapid_pbd_find_landmark_2d_node
   rapid_pbd_pr2_gripper_demo
   rapid_pbd_pr2_arm_joint_demo
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
