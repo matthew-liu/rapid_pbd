@@ -9,6 +9,7 @@
 #include "rapid_pbd_msgs/Landmark.h"
 #include "rapid_pbd_msgs/Program.h"
 #include "rapid_pbd_msgs/SegmentSurfacesGoal.h"
+#include "rapid_pbd_msgs/FindLandmark2DGoal.h"
 #include "rapid_pbd_msgs/Step.h"
 #include "tf/transform_listener.h"
 #include "transform_graph/graph.h"
@@ -234,7 +235,17 @@ void Editor::ViewStep(const std::string& db_id, size_t step_id) {
   viz_.Publish(db_id, world);
 }
 
+void Editor::Detect2DObjects(const std::string& db_id, size_t step_id) {
+  msgs::FindLandmark2DGoal goal;
+  goal.save_cloud = true;
+  goal.match_limit = 0.68;
+  goal.object_name = "can";
+  action_clients_->find_landmark_2d_client.sendGoal(goal);
+}
+
 void Editor::DetectSurfaceObjects(const std::string& db_id, size_t step_id) {
+  Detect2DObjects(db_id, step_id);
+
   msgs::SegmentSurfacesGoal goal;
   goal.save_cloud = true;
   action_clients_->surface_segmentation_client.sendGoal(goal);

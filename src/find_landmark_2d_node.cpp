@@ -6,7 +6,14 @@
 #include "rapid_pbd/find_landmark_2d_action.h"
 #include "ros/ros.h"
 
+#include "message_filters/subscriber.h"
+#include "message_filters/synchronizer.h"
+#include "message_filters/sync_policies/approximate_time.h"
+
+#include "sensor_msgs/Image.h"
+
 namespace pbd = rapid::pbd;
+using namespace message_filters;
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "find_landmark_2d_action_node");
@@ -42,7 +49,18 @@ int main(int argc, char** argv) {
                                          pbd::kMongoDbName);
   pbd::SceneDb scene_db(&proxy);
 
-  rapid::pbd::FindLandmark2DAction action(rgb_topic, depth_topic, cam_info_topic, scene_db, *robot_config);
+  // initialize the action server
+  rapid::pbd::FindLandmark2DAction action(cam_info_topic, scene_db, *robot_config);
+
+  // set up the image topics synchronizer
+  message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, rgb_topic, 1);
+  message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, depth_topic, 1);
+
+  typedef sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> SyncPolicy;
+
+  Synchronizer<SyncPolicy> sync(SyncPolicy(10), rgb_sub, depth_sub);
+  sync.registerCallback(boost::bind(&pbd::FindLandmark2DAction::Callback, &action, _1, _2));
+
   action.Start();
   ros::spin();
   return 0;

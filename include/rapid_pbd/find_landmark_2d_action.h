@@ -8,6 +8,8 @@
 #include "ros/ros.h"
 #include "custom_landmark_2d/matcher.h"
 #include "sensor_msgs/CameraInfo.h"
+#include "sensor_msgs/Image.h"
+#include "cv_bridge/cv_bridge.h"
 #include "tf/transform_listener.h"
 
 #include "rapid_pbd/program_db.h"
@@ -17,15 +19,19 @@ namespace rapid {
 namespace pbd {
 class FindLandmark2DAction {
  public:
-  FindLandmark2DAction(const std::string& rgb_topic, const std::string& depth_topic,
-                       const std::string& cam_info_topic, const SceneDb& scene_db,
+  FindLandmark2DAction(const std::string& cam_info_topic, const SceneDb& scene_db,
                        const RobotConfig& robot_config);
   void Start();
   void Execute(const rapid_pbd_msgs::FindLandmark2DGoalConstPtr& goal);
+  void Callback(const sensor_msgs::ImageConstPtr& rgb, const sensor_msgs::ImageConstPtr& depth);
 
  private:
-  std::string rgb_topic_;
-  std::string depth_topic_;
+  int using_img;
+  int updating_img;
+  std::string template_dir_; // the absolute file path of the directory that stores all templates
+
+  cv_bridge::CvImagePtr rgb_ptr_;
+  cv_bridge::CvImagePtr depth_ptr_;
   sensor_msgs::CameraInfoConstPtr cam_info_;
 
   SceneDb scene_db_;
