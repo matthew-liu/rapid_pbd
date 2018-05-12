@@ -241,6 +241,36 @@ void Editor::Detect2DObjects(const std::string& db_id, size_t step_id) {
   goal.match_limit = 0.68;
   goal.object_name = "can";
   action_clients_->find_landmark_2d_client.sendGoal(goal);
+
+  bool success = action_clients_->find_landmark_2d_client.waitForResult(
+      ros::Duration(10));
+  if (!success) {
+    ROS_ERROR("Failed to detect 2d objects of type: %s", goal.object_name.c_str());
+    return;
+  }
+  msgs::FindLandmark2DResult::ConstPtr result =
+      action_clients_->find_landmark_2d_client.getResult();
+
+  // msgs::Program program;
+  // success = db_.Get(db_id, &program);
+  // if (!success) {
+  //   ROS_ERROR("Unable to update scene for program ID \"%s\"", db_id.c_str());
+  //   return;
+  // }
+  // if (step_id >= program.steps.size()) {
+  //   ROS_ERROR(
+  //       "Unable to update scene for step %ld, program \"%s\", which has %ld "
+  //       "steps",
+  //       step_id, db_id.c_str(), program.steps.size());
+  //   return;
+  // }
+  // DeleteScene(program.steps[step_id].scene_id);
+  // program.steps[step_id].scene_id = result->cloud_db_id;
+  // DeleteLandmarks(msgs::Landmark::CUSTOM_LANDMARK_2D, &program.steps[step_id]);
+  for (size_t i = 0; i < result->landmarks.size(); ++i) {
+    // program.steps[step_id].landmarks.push_back(result->landmarks[i]);
+  }
+  // Update(db_id, program);
 }
 
 void Editor::DetectSurfaceObjects(const std::string& db_id, size_t step_id) {

@@ -7,6 +7,7 @@ project(rapid_pbd)
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   control_msgs
+  custom_landmark_2d
   geometry_msgs
   mongodb_store
   moveit_core
@@ -26,8 +27,8 @@ find_package(catkin REQUIRED COMPONENTS
   shape_msgs
   std_msgs
   surface_perception
-  custom_landmark_2d
   tf
+  tf_conversions
   transform_graph
   urdf
   visualization_msgs
@@ -36,6 +37,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(PCL REQUIRED)
+find_package(Eigen REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -174,6 +176,7 @@ catkin_package(
   DEPENDS
     Boost
     PCL
+    Eigen
 )
 
 ###########
@@ -186,6 +189,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
 )
 
 ## Libraries

@@ -30,10 +30,12 @@
   <build_depend>surface_perception</build_depend>
   <build_depend>custom_landmark_2d</build_depend>
   <build_depend>tf</build_depend>
+  <build_depend>tf_conversions</build_depend>
   <build_depend>trajectory_msgs</build_depend>
   <build_depend>transform_graph</build_depend>
   <build_depend>urdf</build_depend>
   <build_depend>visualization_msgs</build_depend>
+  <build_depend>cmake_modules</build_depend>
   <run_depend>actionlib</run_depend>
   <run_depend>control_msgs</run_depend>
   <run_depend>depthcloud_encoder</run_depend>
@@ -62,6 +64,7 @@
   <run_depend>custom_landmark_2d</run_depend>
   <run_depend>tf2_web_republisher</run_depend>
   <run_depend>tf</run_depend>
+  <run_depend>tf_conversions</run_depend>
   <run_depend>trajectory_msgs</run_depend>
   <run_depend>transform_graph</run_depend>
   <run_depend>urdf</run_depend>

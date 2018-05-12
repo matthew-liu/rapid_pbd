@@ -17,13 +17,14 @@ using namespace message_filters;
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "find_landmark_2d_action_node");
-  if (argc < 4) {
-    ROS_ERROR("Must supply rgb, depth, & cam_info topics as args");
+  if (argc < 5) {
+    ROS_ERROR("Must supply rgb, depth, cam_info & cloud topics as args");
     return 1;
   }
   std::string rgb_topic(argv[1]);
   std::string depth_topic(argv[2]);
   std::string cam_info_topic(argv[3]);
+  std::string cloud_topic(argv[4]);
 
   std::string robot("");
   bool is_robot_specified = ros::param::get("robot", robot);
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
   pbd::SceneDb scene_db(&proxy);
 
   // initialize the action server
-  rapid::pbd::FindLandmark2DAction action(cam_info_topic, scene_db, *robot_config);
+  rapid::pbd::FindLandmark2DAction action(cam_info_topic, cloud_topic, scene_db, *robot_config);
 
   // set up the image topics synchronizer
   message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, rgb_topic, 1);

@@ -24,7 +24,7 @@
     <rosparam command="load" file="$(find rapid_pbd)/config/surface_segmentation.yaml" />
     <node pkg="rapid_pbd" type="surface_segmentation_node" name="surface_segmentation_node" args="$(arg point_cloud_topic)" />
     <node pkg="rapid_pbd" type="find_landmark_2d_node" name="find_landmark_2d_node"
-          args="$(arg color_topic) $(arg depth_topic) $(arg cam_info_topic)" 
+          args="$(arg color_topic) $(arg depth_topic) $(arg cam_info_topic) $(arg point_cloud_topic)" 
     />
   </group>
 
