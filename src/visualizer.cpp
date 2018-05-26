@@ -77,7 +77,7 @@ void Visualizer::Publish(const std::string& program_id, const World& world) {
   // Publish landmark markers
   MarkerArray scene_markers;
   GetSegmentationMarker(world.surface_box_landmarks, robot_config_,
-                        &scene_markers);
+                        &scene_markers, msgs::Landmark::SURFACE_BOX);
   if (scene_markers.markers.size() > 0) {
     step_vizs_[program_id].surface_seg_pub.publish(scene_markers);
   } else {
@@ -94,6 +94,28 @@ void Visualizer::Publish(const std::string& program_id, const World& world) {
       scene_markers.markers.push_back(blank);
     }
     step_vizs_[program_id].surface_seg_pub.publish(scene_markers);
+  }
+
+  // Publish landmark_2d markers
+  MarkerArray landmark_2d_markers;
+  GetSegmentationMarker(world.custom_2d_landmarks, robot_config_,
+                        &landmark_2d_markers, msgs::Landmark::CUSTOM_LANDMARK_2D);
+  if (landmark_2d_markers.markers.size() > 0) {
+    step_vizs_[program_id].landmark_2d_pub.publish(landmark_2d_markers);
+  } else {
+    for (size_t i = 0; i < 100; ++i) {
+      Marker blank;
+      blank.ns = "landmark_2d";
+      blank.id = i;
+      blank.header.frame_id = base_link;
+      blank.type = Marker::CUBE;
+      blank.pose.orientation.w = 1;
+      blank.scale.x = 0.05;
+      blank.scale.y = 0.05;
+      blank.scale.z = 0.05;
+      landmark_2d_markers.markers.push_back(blank);
+    }
+    step_vizs_[program_id].landmark_2d_pub.publish(landmark_2d_markers);
   }
 }
 
@@ -112,6 +134,8 @@ void Visualizer::CreateStepVizIfNotExists(const std::string& program_id) {
         nh_.advertise<PointCloud2>("scene/" + program_id, 10, true);
     step_vizs_[program_id].surface_seg_pub = nh_.advertise<MarkerArray>(
         "surface_segmentation/" + program_id, 10, true);
+    step_vizs_[program_id].landmark_2d_pub = nh_.advertise<MarkerArray>(
+        "landmark_2d/" + program_id, 10, true);
     step_vizs_[program_id].last_scene_id = "";
   }
 }
@@ -123,33 +147,49 @@ RuntimeVisualizer::RuntimeVisualizer(const RobotConfig& robot_config,
 void RuntimeVisualizer::PublishSurfaceBoxes(
     const std::vector<rapid_pbd_msgs::Landmark>& box_landmarks) const {
   MarkerArray scene_markers;
-  GetSegmentationMarker(box_landmarks, robot_config_, &scene_markers);
+  GetSegmentationMarker(box_landmarks, robot_config_, &scene_markers, msgs::Landmark::SURFACE_BOX);
   surface_box_pub_.publish(scene_markers);
 }
 
 void GetSegmentationMarker(const std::vector<msgs::Landmark>& landmarks,
                            const RobotConfig& robot_config,
-                           visualization_msgs::MarkerArray* scene_markers) {
+                           visualization_msgs::MarkerArray* scene_markers,
+                           std::string landmark_type) {
   std::vector<surface_perception::Object> objects;
   for (size_t li = 0; li < landmarks.size(); ++li) {
     const msgs::Landmark& landmark = landmarks[li];
     surface_perception::Object object;
     object.pose_stamped = landmark.pose_stamped;
-    object.dimensions = landmark.surface_box_dims;
+    if (landmark_type == msgs::Landmark::SURFACE_BOX) {
+      object.dimensions = landmark.surface_box_dims;
+    } else if (landmark_type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
+      object.dimensions = landmark.object_dims;
+    }
     objects.push_back(object);
   }
   surface_perception::ObjectMarkers(objects, &scene_markers->markers);
 
-  std::string base_link(robot_config.base_link());
+  std::string object_ns;
+  std::string text_ns;
+  if (landmark_type == msgs::Landmark::SURFACE_BOX) {
+    object_ns = "segmentation";
+    text_ns = "segmentation_names";
+  } else if (landmark_type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
+    object_ns = "landmark_2d";
+    text_ns = "landmark_2d_names";
+  }
 
+  std::string base_link(robot_config.base_link());
+  // make object markers
   for (size_t i = 0; i < objects.size(); ++i) {
-    scene_markers->markers[i].ns = "segmentation";
+    scene_markers->markers[i].ns = object_ns;
     scene_markers->markers[i].id = i;
   }
+  // add text markers
   for (size_t i = 0; i < objects.size(); ++i) {
     Marker marker = scene_markers->markers[i];
     marker.type = Marker::TEXT_VIEW_FACING;
-    marker.ns = "segmentation_names";
+    marker.ns = text_ns;
     marker.text = landmarks[i].name;
     marker.pose.position.z += 0.15;
     marker.scale.x = 0.1;
@@ -162,9 +202,10 @@ void GetSegmentationMarker(const std::vector<msgs::Landmark>& landmarks,
     scene_markers->markers.push_back(marker);
   }
   int num_objects = objects.size();
+  ROS_INFO("markers size: %ld", objects.size());
   for (size_t i = num_objects; i < 100; ++i) {
     Marker blank;
-    blank.ns = "segmentation";
+    blank.ns = object_ns;
     blank.id = i;
     blank.header.frame_id = base_link;
     blank.type = Marker::CUBE;
@@ -174,7 +215,7 @@ void GetSegmentationMarker(const std::vector<msgs::Landmark>& landmarks,
     blank.scale.z = 0.05;
     scene_markers->markers.push_back(blank);
 
-    blank.ns = "segmentation_names";
+    blank.ns = text_ns;
     scene_markers->markers.push_back(blank);
   }
 }

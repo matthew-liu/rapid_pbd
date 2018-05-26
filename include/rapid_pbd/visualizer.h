@@ -27,6 +27,7 @@ struct StepVisualization {
   ros::Publisher robot_pub;
   ros::Publisher scene_pub;
   ros::Publisher surface_seg_pub;
+  ros::Publisher landmark_2d_pub;
   std::string last_scene_id;
 };
 
@@ -70,7 +71,8 @@ class RuntimeVisualizer {
 void GetSegmentationMarker(
     const std::vector<rapid_pbd_msgs::Landmark>& landmarks,
     const RobotConfig& robot_config,
-    visualization_msgs::MarkerArray* scene_markers);
+    visualization_msgs::MarkerArray* scene_markers,
+    const std::string landmark_type);
 }  // namespace pbd
 }  // namespace rapid
 

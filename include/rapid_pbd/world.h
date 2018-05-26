@@ -16,6 +16,7 @@ struct World {
   std::string scene_id;
   JointState joint_state;
   std::vector<rapid_pbd_msgs::Landmark> surface_box_landmarks;
+  std::vector<rapid_pbd_msgs::Landmark> custom_2d_landmarks;
 };
 
 void GetWorld(const RobotConfig& robot_config,

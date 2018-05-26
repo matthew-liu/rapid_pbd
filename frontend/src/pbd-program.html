@@ -308,6 +308,20 @@
                 topic: 'depthcloud_encoded',
                 frameId: depthCloudFrameId
               },
+            }, {
+              isShown: true,
+              name: '2D Landmarks',
+              type: 'markerArray',
+              options: {
+                topic: '/rapid_pbd/landmark_2d/' + db_id,
+              },
+            }, {
+              isShown: false,
+              name: 'Current 2D Landmarks',
+              type: 'markerArray',
+              options: {
+                topic: '/rapid_pbd/runtime_landmark_2d/' + db_id,
+              },
             },
           ],
           sidebarOpened: false,
@@ -385,7 +399,7 @@
         };
         this.$.eventPub.publish(msg);
         this.currentStepNum = Math.max(this.currentStepNum-1, 0);
-        evt.stopPropagation(); 
+        evt.stopPropagation();
       },
 
       // If a new program is loaded, select step 0.
@@ -457,6 +471,8 @@
           this.$.rviz.set('config.displays.4.isShown', true);
           this.$.rviz.set('config.displays.5.isShown', true);
           this.$.rviz.set('config.displays.6.isShown', true);
+          this.$.rviz.set('config.displays.7.isShown', false);
+          this.$.rviz.set('config.displays.8.isShown', true);
         } else {
           this.$.rviz.set('config.displays.1.isShown', true);
           this.$.rviz.set('config.displays.2.isShown', true);
@@ -464,6 +480,8 @@
           this.$.rviz.set('config.displays.4.isShown', false);
           this.$.rviz.set('config.displays.5.isShown', false);
           this.$.rviz.set('config.displays.6.isShown', false);
+          this.$.rviz.set('config.displays.7.isShown', true);
+          this.$.rviz.set('config.displays.8.isShown', false);
         }
       },
     });

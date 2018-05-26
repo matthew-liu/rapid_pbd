@@ -29,6 +29,7 @@ void GetWorld(const RobotConfig& robot_config, const msgs::Program& program,
   JointState js(program.start_joint_state);
   world->joint_state = js;
   world->surface_box_landmarks.clear();
+  world->custom_2d_landmarks.clear();
 
   // TODO: If this gets noticeably slow, change it so that it searches backward
   // instead of simulating forward. The channels to search are:
@@ -149,11 +150,14 @@ void GetWorld(const RobotConfig& robot_config, const msgs::Program& program,
     }
 
     std::vector<msgs::Landmark> surface_boxes;
+    std::vector<msgs::Landmark> object_2d_boxes;
     for (size_t landmark_i = 0; landmark_i < step.landmarks.size();
          ++landmark_i) {
       const msgs::Landmark& landmark = step.landmarks[landmark_i];
       if (landmark.type == msgs::Landmark::SURFACE_BOX) {
         surface_boxes.push_back(landmark);
+      } else if (landmark.type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
+        object_2d_boxes.push_back(landmark);
       }
       // Deal with other landmark types here
     }
@@ -161,6 +165,11 @@ void GetWorld(const RobotConfig& robot_config, const msgs::Program& program,
     if (surface_boxes.size() > 0) {
       world->surface_box_landmarks = surface_boxes;
     }
+    if (object_2d_boxes.size() > 0) {
+      world->custom_2d_landmarks = object_2d_boxes;
+    }
+    ROS_INFO("custom_2d_landmarks size: %ld", object_2d_boxes.size());
+    ROS_INFO("surface_box_landmarks size: %ld", surface_boxes.size());
   }
 }
 

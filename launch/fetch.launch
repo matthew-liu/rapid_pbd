@@ -3,9 +3,9 @@
 
   <arg name="sim" />
   <arg if="$(arg sim)" name="point_cloud_topic" default="/mock_point_cloud" />
-  <arg if="$(arg sim)" name="depth_topic" default="/head_camera/depth_registered/image_raw" />
-  <arg if="$(arg sim)" name="color_topic" default="/head_camera/rgb/image_raw" />
-  <arg if="$(arg sim)" name="cam_info_topic" default="/head_camera/rgb/camera_info" />
+  <arg if="$(arg sim)" name="depth_topic" default="/mock/depth_registered/image_raw" />
+  <arg if="$(arg sim)" name="color_topic" default="/mock/rgb/image_raw" />
+  <arg if="$(arg sim)" name="cam_info_topic" default="/mock/camera_info" />
 
   <arg unless="$(arg sim)" name="point_cloud_topic" default="/head_camera/depth_registered/points" />
   <arg unless="$(arg sim)" name="depth_topic" default="/head_camera/depth_registered/image_raw" />
@@ -24,7 +24,7 @@
     <rosparam command="load" file="$(find rapid_pbd)/config/surface_segmentation.yaml" />
     <node pkg="rapid_pbd" type="surface_segmentation_node" name="surface_segmentation_node" args="$(arg point_cloud_topic)" />
     <node pkg="rapid_pbd" type="find_landmark_2d_node" name="find_landmark_2d_node"
-          args="$(arg color_topic) $(arg depth_topic) $(arg cam_info_topic) $(arg point_cloud_topic)" 
+          args="$(arg color_topic) $(arg depth_topic) $(arg cam_info_topic) $(arg point_cloud_topic)"
     />
   </group>
 

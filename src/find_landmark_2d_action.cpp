@@ -76,8 +76,8 @@ void FindLandmark2DAction::CloudtoLandmark(const PointCloudC::Ptr cloud, rapid_p
   pose_stamped.pose.position.z = (maxPt.z + minPt.z) / 2;
 
   dimensions.x = maxPt.x - minPt.x;
-  dimensions.y = maxPt.y - minPt.z;
-  dimensions.z = maxPt.y - minPt.z;
+  dimensions.y = maxPt.y - minPt.y;
+  dimensions.z = maxPt.z - minPt.z;
 
   landmark.pose_stamped = pose_stamped;
   landmark.object_dims = dimensions;
@@ -144,8 +144,9 @@ void FindLandmark2DAction::Execute(const rapid_pbd_msgs::FindLandmark2DGoalConst
 
       rapid_pbd_msgs::Landmark landmark;
       std::stringstream ss;
-      ss << object_name << num++;
+      ss << object_name << "_" << num++;
       landmark.name = ss.str();
+      landmark.type = rapid_pbd_msgs::Landmark::CUSTOM_LANDMARK_2D;
       CloudtoLandmark(object_cloud, landmark);
 
       result.landmarks.push_back(landmark);
