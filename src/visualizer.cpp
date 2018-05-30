@@ -141,14 +141,23 @@ void Visualizer::CreateStepVizIfNotExists(const std::string& program_id) {
 }
 
 RuntimeVisualizer::RuntimeVisualizer(const RobotConfig& robot_config,
-                                     const ros::Publisher& surface_box_pub)
-    : robot_config_(robot_config), surface_box_pub_(surface_box_pub) {}
+                                     const ros::Publisher& surface_box_pub,
+                                     const ros::Publisher& landmark_2d_pub)
+    : robot_config_(robot_config), surface_box_pub_(surface_box_pub),
+      landmark_2d_pub_(landmark_2d_pub) {}
 
 void RuntimeVisualizer::PublishSurfaceBoxes(
     const std::vector<rapid_pbd_msgs::Landmark>& box_landmarks) const {
   MarkerArray scene_markers;
   GetSegmentationMarker(box_landmarks, robot_config_, &scene_markers, msgs::Landmark::SURFACE_BOX);
   surface_box_pub_.publish(scene_markers);
+}
+
+void RuntimeVisualizer::PublishLandmark2D(
+    const std::vector<rapid_pbd_msgs::Landmark>& custom_2d_landmarks) const {
+  MarkerArray scene_markers;
+  GetSegmentationMarker(custom_2d_landmarks, robot_config_, &scene_markers, msgs::Landmark::CUSTOM_LANDMARK_2D);
+  landmark_2d_pub_.publish(scene_markers);
 }
 
 void GetSegmentationMarker(const std::vector<msgs::Landmark>& landmarks,
@@ -202,7 +211,7 @@ void GetSegmentationMarker(const std::vector<msgs::Landmark>& landmarks,
     scene_markers->markers.push_back(marker);
   }
   int num_objects = objects.size();
-  ROS_INFO("markers size: %ld", objects.size());
+  // ROS_INFO("markers size: %ld", objects.size());
   for (size_t i = num_objects; i < 100; ++i) {
     Marker blank;
     blank.ns = object_ns;

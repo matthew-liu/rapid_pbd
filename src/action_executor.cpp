@@ -72,6 +72,7 @@ bool ActionExecutor::IsValid(const Action& action) {
     }
   } else if (action.type == Action::DETECT_TABLETOP_OBJECTS) {
   } else if (action.type == Action::FIND_CUSTOM_LANDMARK) {
+  } else if (action.type == Action::FIND_CUSTOM_LANDMARK_2D) {
   } else {
     ROS_ERROR("Invalid action type: \"%s\"", action.type.c_str());
     return false;
@@ -111,6 +112,8 @@ std::string ActionExecutor::Start() {
                                          joint_positions);
   } else if (action_.type == Action::DETECT_TABLETOP_OBJECTS) {
     DetectTabletopObjects();
+  } else if (action_.type == Action::FIND_CUSTOM_LANDMARK_2D) {
+    Detect2DObjects();
   }
   return "";
 }
@@ -191,6 +194,8 @@ void ActionExecutor::Cancel() {
     }
   } else if (action_.type == Action::DETECT_TABLETOP_OBJECTS) {
     clients_->surface_segmentation_client.cancelAllGoals();
+  } else if (action_.type == Action::FIND_CUSTOM_LANDMARK_2D) {
+    clients_->find_landmark_2d_client.cancelAllGoals();
   }
 }
 
@@ -215,6 +220,15 @@ void ActionExecutor::DetectTabletopObjects() {
   rapid_pbd_msgs::SegmentSurfacesGoal goal;
   goal.save_cloud = false;
   clients_->surface_segmentation_client.sendGoal(goal);
+}
+
+void ActionExecutor::Detect2DObjects() {
+  // TODO: match_limit & object_name should be from action!
+  rapid_pbd_msgs::FindLandmark2DGoal goal;
+  goal.save_cloud = false;
+  goal.match_limit = 0.68;
+  goal.object_name = "can";
+  clients_->find_landmark_2d_client.sendGoal(goal);
 }
 
 void ActionExecutor::PublishInvalidGroupError(const Action& action) {

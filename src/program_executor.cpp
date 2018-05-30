@@ -111,6 +111,7 @@ void ProgramExecutionServer::Execute(
 
   World world;
   runtime_viz_.PublishSurfaceBoxes(world.surface_box_landmarks);
+  runtime_viz_.PublishLandmark2D(world.custom_2d_landmarks);
   std::vector<boost::shared_ptr<StepExecutor> > executors;
   for (size_t i = 0; i < program.steps.size(); ++i) {
     const Step& step = program.steps[i];

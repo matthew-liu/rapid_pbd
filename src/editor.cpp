@@ -269,10 +269,10 @@ void Editor::Detect2DObjects(const std::string& db_id, size_t step_id) {
   DeleteLandmarks(msgs::Landmark::CUSTOM_LANDMARK_2D, &program.steps[step_id]);
   for (size_t i = 0; i < result->landmarks.size(); ++i) {
     program.steps[step_id].landmarks.push_back(result->landmarks[i]);
-    ROS_INFO("%s's dimension: x=%f, y=%f, z=%f", result->landmarks[i].name.c_str(),
-              result->landmarks[i].object_dims.x,
-              result->landmarks[i].object_dims.y,
-              result->landmarks[i].object_dims.z);
+    // ROS_INFO("%s's dimension: x=%f, y=%f, z=%f", result->landmarks[i].name.c_str(),
+    //           result->landmarks[i].object_dims.x,
+    //           result->landmarks[i].object_dims.y,
+    //           result->landmarks[i].object_dims.z);
   }
   Update(db_id, program);
 }

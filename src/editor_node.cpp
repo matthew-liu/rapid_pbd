@@ -58,6 +58,11 @@ int main(int argc, char** argv) {
          ros::ok()) {
     ROS_WARN("Waiting for surface segmentation server.");
   }
+  while (!action_clients.find_landmark_2d_client.waitForServer(
+             ros::Duration(5)) &&
+         ros::ok()) {
+    ROS_WARN("Waiting for Custom Landmark 2D server.");
+  }
 
   // Build visualizer
   urdf::Model model;

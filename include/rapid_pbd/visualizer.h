@@ -59,13 +59,17 @@ class Visualizer {
 class RuntimeVisualizer {
  public:
   RuntimeVisualizer(const RobotConfig& robot_config,
-                    const ros::Publisher& surface_box_pub);
+                    const ros::Publisher& surface_box_pub,
+                    const ros::Publisher& landmark_2d_pub);
   void PublishSurfaceBoxes(
       const std::vector<rapid_pbd_msgs::Landmark>& box_landmarks) const;
+  void PublishLandmark2D(
+      const std::vector<rapid_pbd_msgs::Landmark>& custom_2d_landmarks) const;
 
  private:
   const RobotConfig& robot_config_;
   ros::Publisher surface_box_pub_;
+  ros::Publisher landmark_2d_pub_;
 };
 
 void GetSegmentationMarker(

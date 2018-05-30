@@ -82,7 +82,9 @@ int main(int argc, char** argv) {
 
   ros::Publisher box_pub =
       nh.advertise<visualization_msgs::MarkerArray>("runtime_segmentation", 10);
-  pbd::RuntimeVisualizer runtime_viz(*robot_config, box_pub);
+  ros::Publisher landmark_2d_pub =
+      nh.advertise<visualization_msgs::MarkerArray>("runtime_landmark_2d", 10);
+  pbd::RuntimeVisualizer runtime_viz(*robot_config, box_pub, landmark_2d_pub);
 
   // Build program DB.
   mongodb_store::MessageStoreProxy proxy(nh, pbd::kMongoProgramCollectionName,

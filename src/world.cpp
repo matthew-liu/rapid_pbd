@@ -168,8 +168,6 @@ void GetWorld(const RobotConfig& robot_config, const msgs::Program& program,
     if (object_2d_boxes.size() > 0) {
       world->custom_2d_landmarks = object_2d_boxes;
     }
-    ROS_INFO("custom_2d_landmarks size: %ld", object_2d_boxes.size());
-    ROS_INFO("surface_box_landmarks size: %ld", surface_boxes.size());
   }
 }
 
@@ -213,6 +211,13 @@ bool MatchLandmark(const World& world, const rapid_pbd_msgs::Landmark& landmark,
       }
     }
     return best <= kMaxDistance;
+  } else if (landmark.type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
+    // always return the first 2d landmark (if there are any), since they are all the same
+    if (world.custom_2d_landmarks.size() <= 0) {
+      return false;
+    }
+    *match = world.custom_2d_landmarks[0];
+    return true;
   } else {
     return false;
   }
