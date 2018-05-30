@@ -22,7 +22,7 @@ namespace pbd {
 class FindLandmark2DAction {
  public:
   FindLandmark2DAction(const std::string& cam_info_topic, const std::string& cloud_topic,
-                       const SceneDb& scene_db, const RobotConfig& robot_config);
+                       const SceneDb& scene_db, const RobotConfig& robot_config, const std::string& template_dir);
   void Start();
   void Execute(const rapid_pbd_msgs::FindLandmark2DGoalConstPtr& goal);
   void Callback(const sensor_msgs::ImageConstPtr& rgb, const sensor_msgs::ImageConstPtr& depth);

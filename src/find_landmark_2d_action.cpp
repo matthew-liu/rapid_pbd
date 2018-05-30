@@ -31,7 +31,7 @@ namespace pbd {
 
 FindLandmark2DAction::FindLandmark2DAction(
     const std::string& cam_info_topic, const std::string& cloud_topic,
-    const SceneDb& scene_db, const RobotConfig& robot_config)
+    const SceneDb& scene_db, const RobotConfig& robot_config, const std::string& template_dir)
     : cam_info_(ros::topic::waitForMessage<sensor_msgs::CameraInfo>(cam_info_topic)),
       cloud_topic_(cloud_topic),
       scene_db_(scene_db),
@@ -42,7 +42,7 @@ FindLandmark2DAction::FindLandmark2DAction(
       nh_(),
       objects_pub_(nh_.advertise<sensor_msgs::PointCloud2>("generated_cloud", 1, true)),
       tf_listener_(),
-      template_dir_("/home/liux44/catkin_ws_indigo/src/") {
+      template_dir_(template_dir) {
 
 matcher_.set_cam_model(cam_info_);
 }
