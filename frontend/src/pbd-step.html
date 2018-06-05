@@ -82,6 +82,8 @@
 
       _computeLandmarks(program, index) {
         var surfaceLandmarks = [];
+        var custom2dLandmarks = [];
+
         if (program && (index || index === 0)) {
           // Search backward for surface landmarks
           for (var i = index - 1; i >= 0; --i) {
@@ -98,8 +100,24 @@
               break;
             }
           }
+          // Search backward for custom 2d landmarks
+          for (var i = index - 1; i >= 0; --i) {
+            var stepLandmarks = program.steps[i].landmarks;
+            var stepCustom2dLandmarks = [];
+            console.log(stepLandmarks);
+            for (var li = 0; li < stepLandmarks.length; ++li) {
+              var landmark = stepLandmarks[li];
+              if (landmark.type === 'custom landmark 2d') {
+                stepCustom2dLandmarks.push(landmark);
+              }
+            }
+            if (stepCustom2dLandmarks.length > 0) {
+              custom2dLandmarks = stepCustom2dLandmarks;
+              break;
+            }
+          }
         }
-
+        console.log(custom2dLandmarks);
         var landmarks = [
           {
             type: 'tf frame',
@@ -110,6 +128,8 @@
           }
         ];
         landmarks = landmarks.concat(surfaceLandmarks);
+        landmarks = landmarks.concat(custom2dLandmarks);
+        console.log(landmarks);
         this.set('landmarks', landmarks);
       },
 

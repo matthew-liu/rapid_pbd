@@ -57,6 +57,7 @@ string MotionPlanning::AddPoseGoal(
 
   tg::Graph graph;
   graph.Add("ee", tg::RefFrame("landmark"), pose);
+
   if (landmark.type == msgs::Landmark::TF_FRAME) {
     tf::StampedTransform st;
     try {

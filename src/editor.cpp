@@ -489,7 +489,8 @@ void Editor::GetNewPose(const rapid_pbd_msgs::Landmark& landmark,
     action->landmark.pose_stamped.header.frame_id = robot_config_.base_link();
     transform_graph::Transform landmark_tf(landmark_transform);
     landmark_tf.ToPose(&action->landmark.pose_stamped.pose);
-  } else if (action->landmark.type == msgs::Landmark::SURFACE_BOX) {
+  } else if (action->landmark.type == msgs::Landmark::SURFACE_BOX ||
+             action->landmark.type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
     std::string landmark_frame(action->landmark.pose_stamped.header.frame_id);
     if (landmark_frame != robot_config_.base_link()) {
       ROS_WARN("Landmark not in base frame.");
@@ -557,7 +558,8 @@ void Editor::ReinterpretPose(const rapid_pbd_msgs::Landmark& new_landmark,
     graph.Add("old landmark",
               transform_graph::RefFrame(robot_config_.base_link()),
               landmark_transform);
-  } else if (action->landmark.type == msgs::Landmark::SURFACE_BOX) {
+  } else if (action->landmark.type == msgs::Landmark::SURFACE_BOX ||
+             action->landmark.type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
     std::string landmark_frame(action->landmark.pose_stamped.header.frame_id);
     if (landmark_frame != robot_config_.base_link()) {
       ROS_WARN("Landmark not in base frame.");
@@ -590,7 +592,8 @@ void Editor::ReinterpretPose(const rapid_pbd_msgs::Landmark& new_landmark,
     action->landmark.pose_stamped.header.frame_id = robot_config_.base_link();
     transform_graph::Transform landmark_tf(landmark_transform);
     landmark_tf.ToPose(&action->landmark.pose_stamped.pose);
-  } else if (action->landmark.type == msgs::Landmark::SURFACE_BOX) {
+  } else if (action->landmark.type == msgs::Landmark::SURFACE_BOX ||
+             action->landmark.type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
     std::string landmark_frame(action->landmark.pose_stamped.header.frame_id);
     if (landmark_frame != robot_config_.base_link()) {
       ROS_WARN("Landmark not in base frame.");

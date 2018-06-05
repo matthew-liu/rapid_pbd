@@ -133,6 +133,8 @@
           }
         } else if (landmark.type === 'surface box') {
           return landmark.name;
+        } else if (landmark.type === 'custom landmark 2d') {
+          return landmark.name;
         }
         return 'Unknown landmark';
       },
