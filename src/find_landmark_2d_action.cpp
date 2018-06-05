@@ -99,6 +99,8 @@ void FindLandmark2DAction::Execute(const rapid_pbd_msgs::FindLandmark2DGoalConst
     }
     matcher_.set_template(templ);
     matcher_.match_limit = goal->match_limit;
+    
+    ROS_INFO("current match limit: %f", matcher_.match_limit);
 
     std::vector<PointCloudC::Ptr> object_clouds;
     while(updating_img) {} // keep waiting

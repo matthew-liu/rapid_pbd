@@ -214,6 +214,7 @@ bool MatchLandmark(const World& world, const rapid_pbd_msgs::Landmark& landmark,
   } else if (landmark.type == msgs::Landmark::CUSTOM_LANDMARK_2D) {
     // always return the first 2d landmark (if there are any), since they are all the same
     if (world.custom_2d_landmarks.size() <= 0) {
+      ROS_INFO("world.custom_2d_landmarks.size() <= 0 !!!!");
       return false;
     }
     *match = world.custom_2d_landmarks[0];

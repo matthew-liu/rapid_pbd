@@ -173,6 +173,28 @@ bool ActionExecutor::IsDone(std::string* error) const {
       }
     }
     return done;
+  } else if (action_.type == Action::FIND_CUSTOM_LANDMARK_2D) {
+    bool done = clients_->find_landmark_2d_client.getState().isDone();
+    if (done) {
+      msgs::FindLandmark2DResultConstPtr result =
+          clients_->find_landmark_2d_client.getResult();
+      if (result) {
+        if (result->landmarks.size() == 0) {
+          *error = errors::kNoLandmarksDetected;
+        }
+        world_->custom_2d_landmarks.clear();
+        for (size_t i = 0; i < result->landmarks.size(); ++i) {
+          msgs::Landmark landmark;
+          world_->custom_2d_landmarks.push_back(landmark);
+        }
+        runtime_viz_.PublishLandmark2D(world_->custom_2d_landmarks);
+      } else {
+        ROS_ERROR("Find Landmark 2D result pointer was null!");
+        *error = "Find Landmark 2D result pointer was null!";
+        return false;
+      }
+    }
+    return done;
   }
   return true;
 }
@@ -226,8 +248,8 @@ void ActionExecutor::Detect2DObjects() {
   // TODO: match_limit & object_name should be from action!
   rapid_pbd_msgs::FindLandmark2DGoal goal;
   goal.save_cloud = false;
-  goal.match_limit = 0.68;
-  goal.object_name = "can";
+  goal.match_limit = action_.match_limit;
+  goal.object_name = action_.custom_landmark_2d_name;
   clients_->find_landmark_2d_client.sendGoal(goal);
 }
 

@@ -1,0 +1,86 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/ros-topic/ros-topic.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="pbd-find-custom-2d-landmarks-action">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-button {
+        margin-left: 10px;
+      }
+      paper-input {
+        max-width: 250px;
+      }
+    </style>
+    <ros-topic auto
+      id="eventPub"
+      msg-type="rapid_pbd_msgs/EditorEvent"
+      topic="rapid_pbd/editor_events"
+      ros="[[ros]]"
+    ></ros-topic>
+    <p>Found objects can be used as landmarks starting on the next step.</p>
+    <div>
+      <paper-input label="landmark name" value="[[action.custom_landmark_2d_name]]" on-change="_nameChanged"></paper-input>
+      <paper-input label="min score threshold" value="[[action.match_limit]]" on-change="_scoreChanged"></paper-input>
+    </div>
+    <paper-button class="normal" on-tap="_detect">Find now</paper-button>
+  </template>
+  <script>
+    Polymer({
+      is: 'pbd-find-custom-2d-landmarks-action',
+
+      properties: {
+        action: {
+          notify: true,
+          type: Object,
+        },
+        programId: String,
+        stepNum: Number,
+        ros: Object,
+      },
+
+      _detect: function() {
+        if (!this.ros || !this.programId || (!this.stepNum && this.stepNum !== 0) ||
+            !this.action.custom_landmark_2d_name || !this.action.match_limit) {
+          console.error('Unable to call detection right now.');
+          return;
+        }
+        var msg = {
+          type: 'detect custom 2d landmarks',
+          program_info: {
+            db_id: this.programId
+          },
+          step_num: this.stepNum,
+          action: this.action
+        };
+        this.$.eventPub.publish(msg);
+      },
+
+      _nameChanged: function (evt) {
+        this.set('action.custom_landmark_2d_name', evt.target.value);
+      },
+
+      _scoreChanged: function (evt) {
+        this._parseString(evt.target.value, 'action.match_limit');
+      },
+
+      _parseString: function (s, key) {
+        if (typeof s === 'string') {
+          var f = parseFloat(s);
+          if (!isNaN(f) && s !== '0.') {
+            this.set(key, f);
+          }
+        } else {
+          this.set(key, s);
+        }
+      },
+
+    });
+  </script>
+</dom-module>

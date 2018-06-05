@@ -104,7 +104,6 @@
           for (var i = index - 1; i >= 0; --i) {
             var stepLandmarks = program.steps[i].landmarks;
             var stepCustom2dLandmarks = [];
-            console.log(stepLandmarks);
             for (var li = 0; li < stepLandmarks.length; ++li) {
               var landmark = stepLandmarks[li];
               if (landmark.type === 'custom landmark 2d') {
@@ -117,7 +116,6 @@
             }
           }
         }
-        console.log(custom2dLandmarks);
         var landmarks = [
           {
             type: 'tf frame',
@@ -129,7 +127,6 @@
         ];
         landmarks = landmarks.concat(surfaceLandmarks);
         landmarks = landmarks.concat(custom2dLandmarks);
-        console.log(landmarks);
         this.set('landmarks', landmarks);
       },
 

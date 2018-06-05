@@ -63,6 +63,9 @@ void Editor::HandleEvent(const msgs::EditorEvent& event) {
       ViewStep(event.program_info.db_id, event.step_num);
     } else if (event.type == msgs::EditorEvent::DETECT_SURFACE_OBJECTS) {
       DetectSurfaceObjects(event.program_info.db_id, event.step_num);
+    } else if (event.type == msgs::EditorEvent::DETECT_LANDMARK_2D) {
+      Detect2DObjects(event.program_info.db_id, event.step_num,
+                      event.action.custom_landmark_2d_name, event.action.match_limit);
     } else if (event.type == msgs::EditorEvent::GET_JOINT_VALUES) {
       GetJointValues(event.program_info.db_id, event.step_num, event.action_num,
                      event.action.actuator_group);
@@ -235,11 +238,12 @@ void Editor::ViewStep(const std::string& db_id, size_t step_id) {
   viz_.Publish(db_id, world);
 }
 
-void Editor::Detect2DObjects(const std::string& db_id, size_t step_id) {
+void Editor::Detect2DObjects(const std::string& db_id, size_t step_id,
+                  const std::string& landmark_name, float match_limit) {
   msgs::FindLandmark2DGoal goal;
   goal.save_cloud = true;
-  goal.match_limit = 0.68;
-  goal.object_name = "can";
+  goal.match_limit = match_limit;
+  goal.object_name = landmark_name;
   action_clients_->find_landmark_2d_client.sendGoal(goal);
 
   bool success = action_clients_->find_landmark_2d_client.waitForResult(
@@ -278,42 +282,40 @@ void Editor::Detect2DObjects(const std::string& db_id, size_t step_id) {
 }
 
 void Editor::DetectSurfaceObjects(const std::string& db_id, size_t step_id) {
-  Detect2DObjects(db_id, step_id);
-  //
-  // msgs::SegmentSurfacesGoal goal;
-  // goal.save_cloud = true;
-  // action_clients_->surface_segmentation_client.sendGoal(goal);
-  // bool success = action_clients_->surface_segmentation_client.waitForResult(
-  //     ros::Duration(10));
-  // if (!success) {
-  //   ROS_ERROR("Failed to segment surface.");
-  //   return;
-  // }
-  // msgs::SegmentSurfacesResult::ConstPtr result =
-  //     action_clients_->surface_segmentation_client.getResult();
-  //
-  // msgs::Program program;
-  // success = db_.Get(db_id, &program);
-  // if (!success) {
-  //   ROS_ERROR("Unable to update scene for program ID \"%s\"", db_id.c_str());
-  //   return;
-  // }
-  // if (step_id >= program.steps.size()) {
-  //   ROS_ERROR(
-  //       "Unable to update scene for step %ld, program \"%s\", which has %ld "
-  //       "steps",
-  //       step_id, db_id.c_str(), program.steps.size());
-  //   return;
-  // }
-  // DeleteScene(program.steps[step_id].scene_id);
-  // program.steps[step_id].scene_id = result->cloud_db_id;
-  // DeleteLandmarks(msgs::Landmark::SURFACE_BOX, &program.steps[step_id]);
-  // for (size_t i = 0; i < result->landmarks.size(); ++i) {
-  //   msgs::Landmark landmark;
-  //   ProcessSurfaceBox(result->landmarks[i], &landmark);
-  //   program.steps[step_id].landmarks.push_back(landmark);
-  // }
-  // Update(db_id, program);
+  msgs::SegmentSurfacesGoal goal;
+  goal.save_cloud = true;
+  action_clients_->surface_segmentation_client.sendGoal(goal);
+  bool success = action_clients_->surface_segmentation_client.waitForResult(
+      ros::Duration(10));
+  if (!success) {
+    ROS_ERROR("Failed to segment surface.");
+    return;
+  }
+  msgs::SegmentSurfacesResult::ConstPtr result =
+      action_clients_->surface_segmentation_client.getResult();
+
+  msgs::Program program;
+  success = db_.Get(db_id, &program);
+  if (!success) {
+    ROS_ERROR("Unable to update scene for program ID \"%s\"", db_id.c_str());
+    return;
+  }
+  if (step_id >= program.steps.size()) {
+    ROS_ERROR(
+        "Unable to update scene for step %ld, program \"%s\", which has %ld "
+        "steps",
+        step_id, db_id.c_str(), program.steps.size());
+    return;
+  }
+  DeleteScene(program.steps[step_id].scene_id);
+  program.steps[step_id].scene_id = result->cloud_db_id;
+  DeleteLandmarks(msgs::Landmark::SURFACE_BOX, &program.steps[step_id]);
+  for (size_t i = 0; i < result->landmarks.size(); ++i) {
+    msgs::Landmark landmark;
+    ProcessSurfaceBox(result->landmarks[i], &landmark);
+    program.steps[step_id].landmarks.push_back(landmark);
+  }
+  Update(db_id, program);
 }
 
 void Editor::GetJointValues(const std::string& db_id, size_t step_id,

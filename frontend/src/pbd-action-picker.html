@@ -81,6 +81,7 @@
         <h3>Perception</h3>
         <paper-button class="normal" on-tap="selectMoveHead">Move head</paper-button>
         <paper-button class="normal" on-tap="selectDetectTabletopObjects">Detect tabletop objects</paper-button>
+        <paper-button class="normal" on-tap="selectFindCustomLandmark2D">Find Custom 2D Landmarks</paper-button>
         <!--paper-button class="normal" on-tap="selectFindCustomLandmark">Find custom landmark</paper-button-->
       </div>
       <template is="dom-if" if="[[params.hasTwoArms]]">
@@ -150,6 +151,13 @@
       selectDetectTabletopObjects: function () {
         var action = {
           type: 'detect tabletop objects'
+        };
+        this.fire('iron-select', action);
+      },
+
+      selectFindCustomLandmark2D: function () {
+        var action = {
+          type: 'find custom landmark 2D'
         };
         this.fire('iron-select', action);
       },
