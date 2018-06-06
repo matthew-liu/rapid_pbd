@@ -184,8 +184,7 @@ bool ActionExecutor::IsDone(std::string* error) const {
         }
         world_->custom_2d_landmarks.clear();
         for (size_t i = 0; i < result->landmarks.size(); ++i) {
-          msgs::Landmark landmark;
-          world_->custom_2d_landmarks.push_back(landmark);
+          world_->custom_2d_landmarks.push_back(result->landmarks[i]);
         }
         runtime_viz_.PublishLandmark2D(world_->custom_2d_landmarks);
       } else {

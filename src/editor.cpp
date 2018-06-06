@@ -247,7 +247,7 @@ void Editor::Detect2DObjects(const std::string& db_id, size_t step_id,
   action_clients_->find_landmark_2d_client.sendGoal(goal);
 
   bool success = action_clients_->find_landmark_2d_client.waitForResult(
-      ros::Duration(10));
+      ros::Duration(60));
   if (!success) {
     ROS_ERROR("Failed to detect 2d objects of type: %s", goal.object_name.c_str());
     return;
@@ -286,7 +286,7 @@ void Editor::DetectSurfaceObjects(const std::string& db_id, size_t step_id) {
   goal.save_cloud = true;
   action_clients_->surface_segmentation_client.sendGoal(goal);
   bool success = action_clients_->surface_segmentation_client.waitForResult(
-      ros::Duration(10));
+      ros::Duration(60));
   if (!success) {
     ROS_ERROR("Failed to segment surface.");
     return;
