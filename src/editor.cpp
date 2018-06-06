@@ -213,6 +213,11 @@ void Editor::DeleteAction(const std::string& db_id, size_t step_id,
     DeleteScene(step->scene_id);
     step->scene_id = "";
     DeleteLandmarks(msgs::Landmark::SURFACE_BOX, step);
+  } else if (action.type == msgs::Action::FIND_CUSTOM_LANDMARK_2D) {
+    ROS_INFO("action type matched msgs::Action::FIND_CUSTOM_LANDMARK_2D");
+    DeleteScene(step->scene_id);
+    step->scene_id = "";
+    DeleteLandmarks(msgs::Landmark::CUSTOM_LANDMARK_2D, step);
   } else if (action.type == msgs::Action::FIND_CUSTOM_LANDMARK) {
     DeleteScene(step->scene_id);
     step->scene_id = "";
@@ -664,6 +669,7 @@ void Editor::DeleteLandmarks(const std::string& landmark_type,
   for (size_t i = 0; i < step->landmarks.size(); ++i) {
     const msgs::Landmark& landmark = step->landmarks[i];
     if (landmark.type != landmark_type) {
+      ROS_INFO("new landmark type : %s", landmark.type.c_str());
       cleaned.push_back(landmark);
     }
   }
